@@ -143,36 +143,6 @@ extension JsonValue {
         }
         
         
-        class func stringToInt64(string: String) -> Int64!
-        {
-            let s = NSScanner(string: string)
-            
-            var result: Int64 = 0
-            
-            return s.scanLongLong(&result) ? result : nil
-        }
-        
-        
-        class func stringToDouble(string: String) -> Double!
-        {
-            let s = NSScanner(string: string)
-            
-            var result: Double = 0
-            
-            return s.scanDouble(&result) ? result : nil
-        }
-        
-        
-        class func hexStringToInt(hexString: String) -> UInt32!
-        {
-            let s = NSScanner(string: hexString)
-            
-            var result: CUnsignedInt = 0
-            
-            return s.scanHexInt(&result) ? UInt32(result) : nil
-        }
-        
-        
         func ungetToken(token: Token) {
             if _ungetTokenBuffer {
                 println("Parser Error - ungetToken when buffer is full!")   // how to throw exception or assert here?
@@ -265,9 +235,9 @@ extension JsonValue {
                 ungetc(c)
                 
                 if isReal {
-                    return Token.Real( Tokenizer.stringToDouble(s)! )
+                    return Token.Real( JsonValue.stringToDouble(s)! )
                 } else {
-                    return Token.Scalar( Tokenizer.stringToInt64(s)! )
+                    return Token.Scalar( JsonValue.stringToInt64(s)! )
                 }
                 
             } // number
@@ -308,7 +278,7 @@ extension JsonValue {
                                     hex += String(hexChar)
                                 }
                                 
-                                value = String( UnicodeScalar( Tokenizer.hexStringToInt(hex)! ) )
+                                value = String( UnicodeScalar( JsonValue.hexStringToInt(hex)! ) )
                                 
                                 break
                             default: break // all others just pass through
