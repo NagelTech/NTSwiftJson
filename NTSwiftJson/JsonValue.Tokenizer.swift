@@ -23,22 +23,21 @@ extension JsonValue {
     
     
     enum Token : Printable {
-        case Text(String)           // quoted string
-        case Scalar(Int64)          // whole number
-        case Real(Double)           // floating point value
-        case Boolean(Bool)          // true/false
-        case Null                   // uhh yeah.
-        case Op(Operator)           //
-        case EOF                    // end of string
-        
-        case Error(String)
+        case StringValue(String)            // quoted string
+        case IntValue(Int64)                // whole number
+        case DoubleValue(Double)            // floating point value
+        case BoolValue(Bool)                // true/false
+        case Null                           // uhh yeah.
+        case Op(Operator)                   // Any operator (see Operator enum)
+        case EOF                            // end of string
+        case Error(String)                  // a parser error
         
         var description: String {
             switch(self) {
-                case .Text(let value): return "\"\(value)\""
-                case .Scalar(let value): return "\(value)"
-                case .Real(let value): return "\(value)"
-                case .Boolean(let value): return "\(value)"
+                case .StringValue(let value): return "\"\(value)\""
+                case .IntValue(let value): return "\(value)"
+                case .DoubleValue(let value): return "\(value)"
+                case .BoolValue(let value): return "\(value)"
                 case .Null: return "null"
                 case .Op(let value): return "\(value.toRaw())"
                 case .EOF: return "<<EOF>>"
@@ -48,9 +47,9 @@ extension JsonValue {
         
         
         var isEOF: Bool {
-        switch(self) {
-        case .EOF: return true
-        default: return false
+            switch(self) {
+                case .EOF: return true
+                default: return false
             }
         }
         
@@ -63,16 +62,16 @@ extension JsonValue {
         }
         
         
-        var isText: Bool {
+        var isString: Bool {
             switch(self) {
-                case .Text: return true
+                case .StringValue: return true
                 default: return false
             }
         }
         
-        var asText: String? {
+        var string: String? {
             switch(self) {
-                case .Text(let value): return value
+                case .StringValue(let value): return value
                 default: return nil
             }
         }
@@ -80,18 +79,18 @@ extension JsonValue {
         
         var isValue: Bool {
             switch(self) {
-                case .Text, .Scalar, .Real, .Boolean, .Null: return true
+                case .StringValue, .IntValue, .DoubleValue, .BoolValue, .Null: return true
                 default: return false
             }
         }
         
         
-        var asValue: JsonValue? {
+        var value: JsonValue? {
             switch(self) {
-                case .Text(let value): return JsonValue.StringValue(value)
-                case .Scalar(let value): return JsonValue.IntValue(value)
-                case .Real(let value): return JsonValue.DoubleValue(value)
-                case .Boolean(let value): return JsonValue.BoolValue(value)
+                case .StringValue(let value): return JsonValue.StringValue(value)
+                case .IntValue(let value): return JsonValue.IntValue(value)
+                case .DoubleValue(let value): return JsonValue.DoubleValue(value)
+                case .BoolValue(let value): return JsonValue.BoolValue(value)
                 case .Null: return JsonValue.Null
                 default: return nil
             }
@@ -188,7 +187,7 @@ extension JsonValue {
             if c.isDigit() || c == "+" || c == "-" {
                 
                 var s = String(c)
-                var isReal = false
+                var isDoubleValue = false
                 
                 // parse initial digits...
                 
@@ -202,7 +201,7 @@ extension JsonValue {
                 // parse fraction...
                 
                 if c != nil && c == "." {
-                    isReal = true
+                    isDoubleValue = true
                     s += "."
                     
                     c = getc()
@@ -215,7 +214,7 @@ extension JsonValue {
                 // parse exponent...
                 
                 if c != nil && (c == "e" || c == "E") {
-                    isReal = true
+                    isDoubleValue = true
                     
                     s += String(c)
                     
@@ -234,10 +233,10 @@ extension JsonValue {
                 
                 ungetc(c)
                 
-                if isReal {
-                    return Token.Real( JsonValue.stringToDouble(s)! )
+                if isDoubleValue {
+                    return Token.DoubleValue( JsonValue.stringToDouble(s)! )
                 } else {
-                    return Token.Scalar( JsonValue.stringToInt64(s)! )
+                    return Token.IntValue( JsonValue.stringToInt64(s)! )
                 }
                 
             } // number
@@ -297,7 +296,7 @@ extension JsonValue {
                     return Token.Error("Unterminated string encountered")
                 }
                 
-                return Token.Text(s)
+                return Token.StringValue(s)
             } // string
             
             // Parse reserved words...
@@ -316,8 +315,8 @@ extension JsonValue {
                 ungetc(c)
                 
                 switch(s) {
-                case "true": return Token.Boolean(true)
-                case "false": return Token.Boolean(false)
+                case "true": return Token.BoolValue(true)
+                case "false": return Token.BoolValue(false)
                 case "null": return Token.Null
                 default: Token.Error("Unexpected token: \(s)")
                 }

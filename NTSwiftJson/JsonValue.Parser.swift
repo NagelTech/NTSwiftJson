@@ -30,7 +30,7 @@ extension JsonValue {
                     break   // empty object
                 }
                 
-                var key = keyToken.asText
+                var key = keyToken.string
                 
                 if key == nil {
                     println("Error: expected key")
@@ -111,7 +111,7 @@ extension JsonValue {
             let token = _tokenizer.getToken()
             
             if token.isValue {
-                return token.asValue
+                return token.value
             }
             
             if token.isOp(Operator.StartObject) {
