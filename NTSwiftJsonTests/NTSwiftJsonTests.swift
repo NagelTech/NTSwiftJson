@@ -8,6 +8,9 @@
 
 import XCTest
 
+import NTSwiftJson
+
+
 class NTSwiftJsonTests: XCTestCase {
     
     override func setUp() {
@@ -21,15 +24,20 @@ class NTSwiftJsonTests: XCTestCase {
     }
     
     func testExample() {
-        // This is an example of a functional test case.
+        var text = " { \"AnInt\" : 42, \"SomeText\": \"This is some \\\"text\\\"\", \"get_real\": 123.456e2, \"nelly\" : null, \"nested\" : { \"eggs\": 12 }, \"array\": [1, 2, 3, 4, 5], \"emptyObject\" : {}, \"emptyArray\": [] } "
+        
+        var json = JsonValue.parseText(text)
+        
+        println("PARSED: \(json)")
+        
         XCTAssert(true, "Pass")
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
-        }
-    }
+//    func testPerformanceExample() {
+//        // This is an example of a performance test case.
+//        self.measureBlock() {
+//            // Put the code you want to measure the time of here.
+//        }
+//    }
     
 }

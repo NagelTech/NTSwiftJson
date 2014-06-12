@@ -10,6 +10,10 @@
 		F0593C9E194753C800908C20 /* NTSwiftJson.h in Headers */ = {isa = PBXBuildFile; fileRef = F0593C9D194753C800908C20 /* NTSwiftJson.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F0593CA4194753C800908C20 /* NTSwiftJson.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0593C98194753C800908C20 /* NTSwiftJson.framework */; };
 		F0593CAB194753C800908C20 /* NTSwiftJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */; };
+		F0593CB5194753F300908C20 /* JsonValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CB4194753F300908C20 /* JsonValue.swift */; };
+		F0A33C7B1948C2D400EFACD9 /* JsonValue.Tokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */; };
+		F0A33C7D1948C30200EFACD9 /* JsonValue.Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */; };
+		F0D6BEE919477C9300D8852E /* RADAR.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D6BEE819477C9300D8852E /* RADAR.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +33,11 @@
 		F0593CA3194753C800908C20 /* NTSwiftJsonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NTSwiftJsonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F0593CA9194753C800908C20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSwiftJsonTests.swift; sourceTree = "<group>"; };
+		F0593CB4194753F300908C20 /* JsonValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.swift; sourceTree = "<group>"; };
+		F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Tokenizer.swift; sourceTree = "<group>"; };
+		F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Parser.swift; sourceTree = "<group>"; };
+		F0D6BEE819477C9300D8852E /* RADAR.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RADAR.swift; sourceTree = "<group>"; };
+		F0D6BEEA194789A600D8852E /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +82,11 @@
 			children = (
 				F0593C9D194753C800908C20 /* NTSwiftJson.h */,
 				F0593C9B194753C800908C20 /* Supporting Files */,
+				F0593CB4194753F300908C20 /* JsonValue.swift */,
+				F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */,
+				F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */,
+				F0D6BEE819477C9300D8852E /* RADAR.swift */,
+				F0D6BEEA194789A600D8852E /* MyPlayground.playground */,
 			);
 			path = NTSwiftJson;
 			sourceTree = "<group>";
@@ -210,6 +224,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F0A33C7B1948C2D400EFACD9 /* JsonValue.Tokenizer.swift in Sources */,
+				F0D6BEE919477C9300D8852E /* RADAR.swift in Sources */,
+				F0593CB5194753F300908C20 /* JsonValue.swift in Sources */,
+				F0A33C7D1948C30200EFACD9 /* JsonValue.Parser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,6 +338,7 @@
 		F0593CAF194753C800908C20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -329,12 +348,14 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		F0593CB0194753C800908C20 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -398,6 +419,7 @@
 				F0593CB0194753C800908C20 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F0593CB1194753C800908C20 /* Build configuration list for PBXNativeTarget "NTSwiftJsonTests" */ = {
 			isa = XCConfigurationList;
@@ -406,6 +428,7 @@
 				F0593CB3194753C800908C20 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
