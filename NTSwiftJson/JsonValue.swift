@@ -8,7 +8,9 @@
 
 import Foundation
 
+
 enum JsonValue : Printable {
+    
     case StringValue(String)
     case IntValue(Int64)
     case DoubleValue(Double)
@@ -111,8 +113,10 @@ enum JsonValue : Printable {
     }
     
 
-    static func parseText(text: String) -> JsonValue? {
-        return Parser.parseText(text)
+    static func parseText(text: String) -> (JsonValue!, NSError?) {
+        let (value, error) = Parser.parseText(text)
+        
+        return (value, error)
     }
     
     

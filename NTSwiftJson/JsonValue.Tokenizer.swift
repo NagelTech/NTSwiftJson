@@ -23,6 +23,7 @@ extension JsonValue {
     
     
     enum Token : Printable {
+        //case String(builtin.String)
         case StringValue(String)            // quoted string
         case IntValue(Int64)                // whole number
         case DoubleValue(Double)            // floating point value
@@ -30,7 +31,8 @@ extension JsonValue {
         case Null                           // uhh yeah.
         case Op(Operator)                   // Any operator (see Operator enum)
         case EOF                            // end of string
-        case Error(String)                  // a parser error
+        case Error(JsonValue.Error)         // a parser error
+        
         
         var description: String {
             switch(self) {
@@ -39,9 +41,9 @@ extension JsonValue {
                 case .DoubleValue(let value): return "\(value)"
                 case .BoolValue(let value): return "\(value)"
                 case .Null: return "null"
-                case .Op(let value): return "\(value.toRaw())"
+                case .Op(let value): return value.toRaw()
                 case .EOF: return "<<EOF>>"
-                case .Error(let message): return "parser Error - \(message)"
+                case .Error(let error): return error.localizedDescription   // I guess
             }
         }
         
@@ -68,6 +70,7 @@ extension JsonValue {
                 default: return false
             }
         }
+        
         
         var string: String? {
             switch(self) {
@@ -106,14 +109,26 @@ extension JsonValue {
     }
     
     
+    struct Location {
+        var row = 0
+        var column = 0
+    }
+    
+   
     class Tokenizer {
         var _current: String.UnicodeScalarView.GeneratorType
         var _ungetcBuffer: UnicodeScalar? = nil
         var _ungetTokenBuffer: Token? = nil
+        var _location: Location
+        
         
         init(text:String) {
             _current = text.unicodeScalars.generate()
+            _location = Location(row: 0, column: 0)
         }
+
+        
+        var location: Location { return _location }
         
         
         func getc() -> UnicodeScalar! {
@@ -126,7 +141,19 @@ extension JsonValue {
                 return value
             }
             
-            return _current.next()
+            let c = _current.next()
+            
+            if c {
+                
+                if c == "\n" {
+                    ++_location.row
+                    _location.column = 0
+                } else {
+                    ++_location.column
+                }
+            }
+            
+            return c
         }
         
         
@@ -151,14 +178,13 @@ extension JsonValue {
         }
         
         
-        func getToken() -> Token
+        func getToken() -> (Token!, Error?)
         {
-            if ( _ungetTokenBuffer )
-            {
+            if _ungetTokenBuffer {
                 let value = _ungetTokenBuffer
                 _ungetTokenBuffer = nil
                 
-                return value!
+                return (value, nil)
             }
             
             // First, skip any spaces...
@@ -170,16 +196,18 @@ extension JsonValue {
                 }
             }
             
+            var loc = _location
+            
             var c = getc()
             
             if !c {
-                return Token.EOF  // no remaining tokens
+                return (Token.EOF, nil)  // no remaining tokens
             }
             
             // Parse operators (all are single char)...
             
             if let operator = Operator.fromRaw(String(c)) {
-                return Token.Op(operator)
+                return (Token.Op(operator), nil)
             }
             
             // Parse Numbers...
@@ -234,9 +262,9 @@ extension JsonValue {
                 ungetc(c)
                 
                 if isDoubleValue {
-                    return Token.DoubleValue( JsonValue.stringToDouble(s)! )
+                    return (Token.DoubleValue( JsonValue.stringToDouble(s)! ), nil)
                 } else {
-                    return Token.IntValue( JsonValue.stringToInt64(s)! )
+                    return (Token.IntValue( JsonValue.stringToInt64(s)! ), nil)
                 }
                 
             } // number
@@ -254,7 +282,7 @@ extension JsonValue {
                         c = getc()
                         
                         if !c {
-                            return Token.Error("Unterminated string encountered")
+                            return (nil, Error(code: Error.Code.UnterminatedString, location: loc))
                         }
                         
                         var value: String = String(c)
@@ -276,8 +304,12 @@ extension JsonValue {
                                     
                                     hex += String(hexChar)
                                 }
-                                
-                                value = String( UnicodeScalar( JsonValue.hexStringToInt(hex)! ) )
+                            
+                                if let hexInt = JsonValue.hexStringToInt(hex) {
+                                    value = String( UnicodeScalar(hexInt) )
+                                } else {
+                                    return (nil, Error(code: Error.Code.UnexpectedToken, location: _location, token: "\\u\(hex)"))
+                                }
                                 
                                 break
                             default: break // all others just pass through
@@ -293,10 +325,10 @@ extension JsonValue {
                 } // while
                 
                 if !c {
-                    return Token.Error("Unterminated string encountered")
+                    return (nil, Error(code: Error.Code.UnterminatedString, location: loc))
                 }
                 
-                return Token.StringValue(s)
+                return (Token.StringValue(s), nil)
             } // string
             
             // Parse reserved words...
@@ -315,16 +347,16 @@ extension JsonValue {
                 ungetc(c)
                 
                 switch(s) {
-                case "true": return Token.BoolValue(true)
-                case "false": return Token.BoolValue(false)
-                case "null": return Token.Null
-                default: Token.Error("Unexpected token: \(s)")
+                case "true": return (Token.BoolValue(true), nil)
+                case "false": return (Token.BoolValue(false), nil)
+                case "null": return (Token.Null, nil)
+                default: return (nil, Error(code: Error.Code.UnexpectedToken, location: loc, token: s))
                 }
             }
             
             // Anything else is an error
             
-            return Token.Error("Unexpected character: \(c)")
+            return (nil, Error(code: Error.Code.UnexpectedToken, location: loc, token: String(c)))
         }
         
     }

@@ -14,17 +14,20 @@ extension JsonValue {
     class Parser
     {
         var _tokenizer: Tokenizer!
-        var _error: NSError? = nil
         
-        
-        func _parseObject() -> Dictionary<String,JsonValue>? {
+        func _parseObject() -> (Dictionary<String,JsonValue>?, Error?) {
             
             var result = Dictionary<String,JsonValue>()
+            var error: Error?
             
             // StartObject has already been parsed
             
             while(true) {
-                var keyToken = _tokenizer.getToken()
+                var (keyToken, error1) = _tokenizer.getToken()
+                
+                if error1 {
+                    return (nil, error1)
+                }
                 
                 if keyToken.isOp(Operator.EndObject) {
                     break   // empty object
@@ -33,47 +36,61 @@ extension JsonValue {
                 var key = keyToken.string
                 
                 if key == nil {
-                    println("Error: expected key")
-                    return nil  // error: expected key
+                    return (nil, Error(code: Error.Code.Expected, location: _tokenizer.location, token: "key"))
                 }
                 
-                if !_tokenizer.getToken().isOp(Operator.Assign) {
-                    println("Error: expected :")
-                    return nil // error: expected ":"
+                var (assignToken, error2) = _tokenizer.getToken()
+                
+                if error2 {
+                    return (nil, error2)
                 }
                 
-                var value = _parseValue()
+                if !assignToken.isOp(Operator.Assign) {
+                    return (nil, Error(code: Error.Code.Expected, location: _tokenizer.location, token: ":"))
+                }
                 
+                var (value, error3) = _parseValue()
+                
+                if error3 {
+                    return (nil, error3)
+                }
+
                 if value == nil {
-                    println("Error: expected value")
-                    return nil  // error: expected value
+                    return (nil, Error(code: Error.Code.Expected, location: _tokenizer.location, token: "value"))
                 }
                 
                 result[key!] = value!
                 
-                var seperator = _tokenizer.getToken()
+                var (seperatorToken, error4) = _tokenizer.getToken()
                 
-                if !seperator.isOp(Operator.Seperator) {
+                if error4 {
+                    return (nil, error4)
+                }
+                
+                if !seperatorToken.isOp(Operator.Seperator) {
                     
-                    if seperator.isOp(Operator.EndObject) {
+                    if seperatorToken.isOp(Operator.EndObject) {
                         break
                     }
                     
-                    println("Error: expected , or }")
-                    return nil // error: expected "," or "}"
+                    return (nil, Error(code: Error.Code.Expected, location: _tokenizer.location, token: ", or }"))
                 }
             }
             
-            return result
+            return (result, nil)
         }
         
         
-        func _parseArray() -> JsonValue[]? {
+        func _parseArray() -> (JsonValue[]?, Error?) {
             var result = JsonValue[]()
             
             while(true)
             {
-                var endArray = _tokenizer.getToken()
+                var (endArray, error1) = _tokenizer.getToken()
+                
+                if error1 {
+                    return (nil, error1)
+                }
                 
                 if endArray.isOp(Operator.EndArray) {
                     break
@@ -81,64 +98,96 @@ extension JsonValue {
                 
                 _tokenizer.ungetToken(endArray)
                 
-                var value = _parseValue()
+                var (value, error2) = _parseValue()
                 
-                if !value {
-                    println("Error: expected value")
-                    return nil // error: expected value
+                if error2 {
+                    return (nil, error2)
                 }
                 
                 result += value!
                 
-                var seperator = _tokenizer.getToken()
+                var (seperator, error3) = _tokenizer.getToken()
+                
+                if error3 {
+                    return (nil, error3)
+                }
                 
                 if !seperator.isOp(Operator.Seperator) {
                     if seperator.isOp(Operator.EndArray) {
                         break
                     }
                     
-                    println("Error: expected , or ]")
-                    return nil // error: expected "," or "]"
+                    return (nil, Error(code: Error.Code.Expected, location: _tokenizer.location, token: ", or ]"))
                 }
             }
             
-            return result
+            return (result, nil)
         }
         
         
-        func _parseValue() -> JsonValue? {
+        func _parseValue() -> (JsonValue?, Error?) {
             
-            let token = _tokenizer.getToken()
+            let (token, error) = _tokenizer.getToken()
+            
+            if error {
+                return (nil, error)
+            }
             
             if token.isValue {
-                return token.value
+                return (token.value, nil)
             }
             
             if token.isOp(Operator.StartObject) {
-                let object = _parseObject()
+                let (object, error) = _parseObject()
                 
-                return (object) ? JsonValue.ObjectValue(object!) : nil
+                if error {
+                    return (nil, error)
+                }
+                
+                return (JsonValue.ObjectValue(object!), nil)
             }
             
             if token.isOp(Operator.StartArray) {
-                let array = _parseArray()
+                let (array, error) = _parseArray()
                 
-                return (array) ? JsonValue.ArrayValue(array!) : nil
+                if error {
+                    return (nil, error)
+                }
+                
+                return (JsonValue.ArrayValue(array!), nil)
             }
             
-            println("Error unexpected token: (\token)")
-            
-            return nil  // error
+            return (nil, Error(code: Error.Code.UnexpectedToken, location: _tokenizer.location, token: "\(token)"))
         }
         
         
-        class func parseText(text: String) -> JsonValue? {
+        class func parseText(text: String) -> (JsonValue!, Error?) {
             
             var parser = Parser()
             
             parser._tokenizer = Tokenizer(text: text)
+
+            let (value, error) = parser._parseValue()
             
-            return parser._parseValue()
+            if error {
+                return (nil, error)
+            }
+            
+            // Check we are at then end of our string...
+            
+            let (eofToken, error2) = parser._tokenizer.getToken()
+            
+            if error2 {
+                return (nil, error2)
+            }
+            
+            if !eofToken.isEOF {
+                return (nil, Error(code: Error.Code.UnexpectedToken, location: parser._tokenizer.location, token: "\(eofToken)"))
+            }
+            
+            // all looks good, return the value!
+            
+            return (value, nil)
         }
     }
 }

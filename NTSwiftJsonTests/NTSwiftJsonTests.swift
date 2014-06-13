@@ -26,7 +26,9 @@ class NTSwiftJsonTests: XCTestCase {
     func testExample() {
         var text = " { \"AnInt\" : 42, \"SomeText\": \"This is some \\\"text\\\"\", \"get_real\": 123.456e2, \"nelly\" : null, \"nested\" : { \"eggs\": 12 }, \"array\": [1, 2, 3, 4, 5], \"emptyObject\" : {}, \"emptyArray\": [] } "
         
-        var json = JsonValue.parseText(text)
+        var (json, error) = JsonValue.parseText(text)
+        
+        XCTAssert(error == nil, "Parser Failed with error: \(error.description)")
         
         println("PARSED: \(json)")
         
