@@ -131,7 +131,7 @@ extension JsonValue {
         var location: Location { return _location }
         
         
-        func getc() -> UnicodeScalar! {
+        func _getc() -> UnicodeScalar! {
             
             if ( _ungetcBuffer )
             {
@@ -157,7 +157,7 @@ extension JsonValue {
         }
         
         
-        func ungetc(c: UnicodeScalar!)
+        func _ungetc(c: UnicodeScalar!)
         {
             if _ungetcBuffer {
                 println("Parser Error - ungetc when buffer is full!")   // how to throw exception or assert here?
@@ -178,7 +178,7 @@ extension JsonValue {
         }
         
         
-        func getToken() -> (Token!, Error?)
+        func getToken() -> (token: Token!, error: Error?)
         {
             if _ungetTokenBuffer {
                 let value = _ungetTokenBuffer
@@ -189,16 +189,16 @@ extension JsonValue {
             
             // First, skip any spaces...
             
-            while let c = getc() {
+            while let c = _getc() {
                 if !c.isSpace() {
-                    ungetc(c)
+                    _ungetc(c)
                     break
                 }
             }
             
             var loc = _location
             
-            var c = getc()
+            var c = _getc()
             
             if !c {
                 return (Token.EOF, nil)  // no remaining tokens
@@ -219,11 +219,11 @@ extension JsonValue {
                 
                 // parse initial digits...
                 
-                c = getc()
+                c = _getc()
                 
                 while !c == false && c.isDigit() {
                     s += String(c)
-                    c = getc()
+                    c = _getc()
                 }
                 
                 // parse fraction...
@@ -232,10 +232,10 @@ extension JsonValue {
                     isDoubleValue = true
                     s += "."
                     
-                    c = getc()
+                    c = _getc()
                     while !c == false && c.isDigit() {
                         s += String(c)
-                        c = getc()
+                        c = _getc()
                     }
                 }
                 
@@ -246,20 +246,20 @@ extension JsonValue {
                     
                     s += String(c)
                     
-                    c = getc()
+                    c = _getc()
                     
                     if !c == false && (c == "+" || c == "-") {
                         s += String(c)
-                        c = getc()
+                        c = _getc()
                     }
                     
                     while !c == false && c.isDigit() {
                         s += String(c)
-                        c = getc()
+                        c = _getc()
                     }
                 }
                 
-                ungetc(c)
+                _ungetc(c)
                 
                 if isDoubleValue {
                     return (Token.DoubleValue( JsonValue.stringToDouble(s)! ), nil)
@@ -274,12 +274,12 @@ extension JsonValue {
             if c == "\"" {
                 var s = ""
                 
-                c = getc()
+                c = _getc()
                 
                 while c != nil && c != "\"" {
                     
                     if c == "\\" {
-                        c = getc()
+                        c = _getc()
                         
                         if !c {
                             return (nil, Error(code: Error.Code.UnterminatedString, location: loc))
@@ -297,7 +297,7 @@ extension JsonValue {
                                 var hex:String = ""
                                 
                                 for _ in 0..4 {
-                                    let hexChar = getc()
+                                    let hexChar = _getc()
                                     if !hexChar {
                                         break
                                     }
@@ -321,7 +321,7 @@ extension JsonValue {
                         s += String(c)
                     }
                     
-                    c = getc()
+                    c = _getc()
                 } // while
                 
                 if !c {
@@ -337,20 +337,20 @@ extension JsonValue {
                 
                 var s = String(c)
                 
-                c = getc()
+                c = _getc()
                 
                 while c != nil && c.isAlpha() {
                     s += String(c)
-                    c = getc()
+                    c = _getc()
                 }
                 
-                ungetc(c)
+                _ungetc(c)
                 
                 switch(s) {
-                case "true": return (Token.BoolValue(true), nil)
-                case "false": return (Token.BoolValue(false), nil)
-                case "null": return (Token.Null, nil)
-                default: return (nil, Error(code: Error.Code.UnexpectedToken, location: loc, token: s))
+                    case "true": return (Token.BoolValue(true), nil)
+                    case "false": return (Token.BoolValue(false), nil)
+                    case "null": return (Token.Null, nil)
+                    default: return (nil, Error(code: Error.Code.UnexpectedToken, location: loc, token: s))
                 }
             }
             
