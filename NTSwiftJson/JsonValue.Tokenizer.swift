@@ -23,7 +23,6 @@ extension JsonValue {
     
     
     enum Token : Printable {
-        //case String(builtin.String)
         case StringValue(String)            // quoted string
         case IntValue(Int64)                // whole number
         case DoubleValue(Double)            // floating point value
@@ -31,7 +30,6 @@ extension JsonValue {
         case Null                           // uhh yeah.
         case Op(Operator)                   // Any operator (see Operator enum)
         case EOF                            // end of string
-        case Error(JsonValue.Error)         // a parser error
         
         
         var description: String {
@@ -43,7 +41,6 @@ extension JsonValue {
                 case .Null: return "null"
                 case .Op(let value): return value.toRaw()
                 case .EOF: return "<<EOF>>"
-                case .Error(let error): return error.localizedDescription   // I guess
             }
         }
         
@@ -51,14 +48,6 @@ extension JsonValue {
         var isEOF: Bool {
             switch(self) {
                 case .EOF: return true
-                default: return false
-            }
-        }
-        
-        
-        var isError: Bool {
-            switch(self) {
-                case .Error: return true
                 default: return false
             }
         }
@@ -159,9 +148,7 @@ extension JsonValue {
         
         func _ungetc(c: UnicodeScalar!)
         {
-            if _ungetcBuffer {
-                println("Parser Error - ungetc when buffer is full!")   // how to throw exception or assert here?
-            }
+            assert(_ungetcBuffer == nil, "Parser Error - ungetc when buffer is full!")
             
             if c {
                 _ungetcBuffer = c
@@ -170,9 +157,7 @@ extension JsonValue {
         
         
         func ungetToken(token: Token) {
-            if _ungetTokenBuffer {
-                println("Parser Error - ungetToken when buffer is full!")   // how to throw exception or assert here?
-            }
+            assert(_ungetTokenBuffer == nil, "Parser Error - ungetToken when buffer is full!")
             
             _ungetTokenBuffer = token
         }
@@ -221,7 +206,7 @@ extension JsonValue {
                 
                 c = _getc()
                 
-                while !c == false && c.isDigit() {
+                while c != nil && c.isDigit() {
                     s += String(c)
                     c = _getc()
                 }
@@ -233,7 +218,7 @@ extension JsonValue {
                     s += "."
                     
                     c = _getc()
-                    while !c == false && c.isDigit() {
+                    while c != nil && c.isDigit() {
                         s += String(c)
                         c = _getc()
                     }
@@ -248,12 +233,12 @@ extension JsonValue {
                     
                     c = _getc()
                     
-                    if !c == false && (c == "+" || c == "-") {
+                    if c != nil && (c == "+" || c == "-") {
                         s += String(c)
                         c = _getc()
                     }
                     
-                    while !c == false && c.isDigit() {
+                    while c != nil && c.isDigit() {
                         s += String(c)
                         c = _getc()
                     }
