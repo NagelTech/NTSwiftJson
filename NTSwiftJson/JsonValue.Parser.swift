@@ -77,6 +77,9 @@ extension JsonValue {
         
         
         func _parseArray() -> (value: JsonValue[]?, error: Error?) {
+            
+            // StartArray has already been parsed
+            
             var result = JsonValue[]()
             
             while(true)

@@ -32,6 +32,8 @@ class NTSwiftJsonTests: XCTestCase {
         
         println("PARSED: \(json)")
         
+        println("PARSED: \(json.prettyDescription)")
+        
         XCTAssert(true, "Pass")
     }
     

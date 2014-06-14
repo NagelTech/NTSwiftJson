@@ -11,6 +11,7 @@
 		F0593CA4194753C800908C20 /* NTSwiftJson.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F0593C98194753C800908C20 /* NTSwiftJson.framework */; };
 		F0593CAB194753C800908C20 /* NTSwiftJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */; };
 		F0593CB5194753F300908C20 /* JsonValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CB4194753F300908C20 /* JsonValue.swift */; };
+		F078A058194BD3230041D79F /* NTJsonValue.description.swift in Sources */ = {isa = PBXBuildFile; fileRef = F078A057194BD3230041D79F /* NTJsonValue.description.swift */; };
 		F08A5F05194A08FD003DB8CB /* JsonValue.Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08A5F04194A08FD003DB8CB /* JsonValue.Error.swift */; };
 		F0A33C7B1948C2D400EFACD9 /* JsonValue.Tokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */; };
 		F0A33C7D1948C30200EFACD9 /* JsonValue.Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */; };
@@ -35,6 +36,7 @@
 		F0593CA9194753C800908C20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSwiftJsonTests.swift; sourceTree = "<group>"; };
 		F0593CB4194753F300908C20 /* JsonValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.swift; sourceTree = "<group>"; };
+		F078A057194BD3230041D79F /* NTJsonValue.description.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NTJsonValue.description.swift; sourceTree = "<group>"; };
 		F08A5F04194A08FD003DB8CB /* JsonValue.Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Error.swift; sourceTree = "<group>"; };
 		F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Tokenizer.swift; sourceTree = "<group>"; };
 		F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Parser.swift; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 				F0593CB4194753F300908C20 /* JsonValue.swift */,
 				F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */,
 				F0D6BEEA194789A600D8852E /* MyPlayground.playground */,
+				F078A057194BD3230041D79F /* NTJsonValue.description.swift */,
 				F0593C9D194753C800908C20 /* NTSwiftJson.h */,
 				F0D6BEE819477C9300D8852E /* RADAR.swift */,
 				F0593C9B194753C800908C20 /* Supporting Files */,
@@ -228,6 +231,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F0A33C7B1948C2D400EFACD9 /* JsonValue.Tokenizer.swift in Sources */,
+				F078A058194BD3230041D79F /* NTJsonValue.description.swift in Sources */,
 				F0D6BEE919477C9300D8852E /* RADAR.swift in Sources */,
 				F0593CB5194753F300908C20 /* JsonValue.swift in Sources */,
 				F08A5F05194A08FD003DB8CB /* JsonValue.Error.swift in Sources */,
