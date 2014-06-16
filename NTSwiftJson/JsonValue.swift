@@ -69,6 +69,7 @@ enum JsonValue {
             case .BoolValue(let value): return value
             default: return nil
         }
+            
     }
     
     
@@ -102,6 +103,33 @@ enum JsonValue {
         return (value, error)
     }
     
+    
+    static func parseText2(text: String, inout error:NSError?) -> JsonValue! {
+        let result = Parser.parseText(text)
+        
+        error = result.error
+        
+        return result.value
+    }
+    
+    
+    static func parseText2(text: String) -> JsonValue! {
+        var error: NSError? = nil
+        
+        return parseText2(text, error: &error)
+    }
+    
+    
+    static func parseText3(text: String, inout error:NSErrorPointer) -> JsonValue! {
+    let result = Parser.parseText(text)
+    
+    if error {
+        error.memory = result.error
+    }
+        
+    return result.value
+    }
+
     
     static func stringToInt64(string: String) -> Int64!
     {
