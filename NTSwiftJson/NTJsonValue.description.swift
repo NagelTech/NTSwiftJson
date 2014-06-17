@@ -23,7 +23,7 @@ extension JsonValue : Printable {
             case UnicodeScalar(0x000c): result += "\\f";
             case "\r": result += "\\r";
             default:
-                result += ch.isASCII() ? String(ch) : NSString(format: "\\u%04d", ch.value)
+                result += ch.isASCII() ? String(ch) : NSString(format: "\\u%04X", ch.value)
             } // switch
         } // for
         
