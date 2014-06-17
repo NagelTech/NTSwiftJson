@@ -9,7 +9,7 @@
 import Foundation
 
 
-enum JsonValue {
+enum JsonValue : Equatable {
     
     case StringValue(String)
     case IntValue(Int64)
@@ -47,7 +47,6 @@ enum JsonValue {
     
     
     var double: Double! {
-    
         switch(self) {
             case .StringValue(let value): return JsonValue.stringToDouble(value)
             case .IntValue(let value): return Double(value)
@@ -96,7 +95,57 @@ enum JsonValue {
         }
     }
     
+    
+    subscript(index: Int) -> JsonValue! {
+        get {
+            if let array = self.array {
+                return (index >= 0 && index < self.array.count) ? array[index] : nil
+            }
+                
+            return nil
+        }
+        
+        mutating set(value) {
+            switch(self) {
+                case .ArrayValue(var array):
+                    array[index] = value
+                default:
+                    break
+            }
+        }
+    }
+    
+    
+    subscript(index: String) -> JsonValue! {
+        get {
+            if let object = self.object {
+                return object[index]
+            }
+                
+            return nil
+        }
+        
+        mutating set(value) { // this doesn't seem to really work?
+            switch(self) {
+                case .ObjectValue(var object):
+                    object[index] = value
+                default:
+                    break   // do nothing, I guess
+            }
+        }
+    }
+    
+    
+    mutating func setValue(key: String, value: JsonValue) {
+        switch(self) {
+            case .ObjectValue(var object):
+                object[key] = value
+            default:
+                break   // do nothing, I guess
+            }
+    }
 
+    
     static func parseText(text: String) -> (JsonValue!, NSError?) {
         let (value, error) = Parser.parseText(text)
         
@@ -159,5 +208,77 @@ enum JsonValue {
         
         return (s.scanHexInt(&result) && s.atEnd) ? UInt32(result) : nil
     }
-
 }
+
+
+@infix func == (left: JsonValue, right: JsonValue) -> Bool {
+    // Compares JsonValues to see if they are equivalent values, converting them to the same types
+    // This means that JsonValue.StringValue("123") == JsonValue.IntValue(123) for instance
+    
+    switch(left) {
+        case .StringValue(let leftValue):
+            if let rightValue = right.string {
+                return leftValue == rightValue
+            } else {
+                return false
+            }
+            
+        case .IntValue(let leftValue):
+            if let rightValue = right.int {
+                return Int(leftValue) == rightValue
+            } else {
+                return false
+            }
+            
+        case .DoubleValue(let leftValue):
+            if let rightValue = right.double {
+                return leftValue == rightValue
+            } else {
+                return false
+            }
+            
+
+        case .BoolValue(let leftValue):
+            if let rightValue = right.bool {
+                return leftValue == rightValue
+            } else {
+                return false
+            }
+            
+        case .Null:
+            return right.isNull
+            
+        case .ObjectValue(let leftObject):
+            let rightObject = right.object
+            if !rightObject || leftObject.count != rightObject.count {
+                return false
+            }
+            for (key, leftValue) in leftObject {
+                let rightValue = rightObject[key]
+                if !rightValue || leftValue != rightValue { // recursive
+                    return false
+                }
+            }
+            return true
+            
+        case .ArrayValue(let leftArray):
+            let rightArray = right.array
+            if !rightArray || rightArray.count != leftArray.count {
+                return false
+            }
+            
+            var rightEnumerator = rightArray.generate()
+            
+            for leftValue in leftArray {
+                let rightValue = rightEnumerator.next()
+                
+                if leftValue != rightValue { // recursive
+                    return false
+                }
+            }
+            return true
+    }
+}
+
+
+
