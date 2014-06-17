@@ -12,6 +12,8 @@
 		F0593CAB194753C800908C20 /* NTSwiftJsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */; };
 		F0593CB5194753F300908C20 /* JsonValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0593CB4194753F300908C20 /* JsonValue.swift */; };
 		F078A058194BD3230041D79F /* NTJsonValue.description.swift in Sources */ = {isa = PBXBuildFile; fileRef = F078A057194BD3230041D79F /* NTJsonValue.description.swift */; };
+		F08368B8194FC9300070377D /* test1.json in Resources */ = {isa = PBXBuildFile; fileRef = F08368B7194FC9300070377D /* test1.json */; };
+		F08368BA194FC9EA0070377D /* TestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08368B9194FC9EA0070377D /* TestBase.swift */; };
 		F08A5F05194A08FD003DB8CB /* JsonValue.Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08A5F04194A08FD003DB8CB /* JsonValue.Error.swift */; };
 		F0A33C7B1948C2D400EFACD9 /* JsonValue.Tokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */; };
 		F0A33C7D1948C30200EFACD9 /* JsonValue.Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */; };
@@ -37,6 +39,8 @@
 		F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTSwiftJsonTests.swift; sourceTree = "<group>"; };
 		F0593CB4194753F300908C20 /* JsonValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.swift; sourceTree = "<group>"; };
 		F078A057194BD3230041D79F /* NTJsonValue.description.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NTJsonValue.description.swift; sourceTree = "<group>"; };
+		F08368B7194FC9300070377D /* test1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = test1.json; sourceTree = "<group>"; };
+		F08368B9194FC9EA0070377D /* TestBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestBase.swift; sourceTree = "<group>"; };
 		F08A5F04194A08FD003DB8CB /* JsonValue.Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Error.swift; sourceTree = "<group>"; };
 		F0A33C7A1948C2D400EFACD9 /* JsonValue.Tokenizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Tokenizer.swift; sourceTree = "<group>"; };
 		F0A33C7C1948C30200EFACD9 /* JsonValue.Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonValue.Parser.swift; sourceTree = "<group>"; };
@@ -108,8 +112,10 @@
 		F0593CA7194753C800908C20 /* NTSwiftJsonTests */ = {
 			isa = PBXGroup;
 			children = (
+				F08368B6194FC8F50070377D /* TestData */,
 				F0593CAA194753C800908C20 /* NTSwiftJsonTests.swift */,
 				F0593CA8194753C800908C20 /* Supporting Files */,
+				F08368B9194FC9EA0070377D /* TestBase.swift */,
 			);
 			path = NTSwiftJsonTests;
 			sourceTree = "<group>";
@@ -120,6 +126,14 @@
 				F0593CA9194753C800908C20 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F08368B6194FC8F50070377D /* TestData */ = {
+			isa = PBXGroup;
+			children = (
+				F08368B7194FC9300070377D /* test1.json */,
+			);
+			path = TestData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -220,6 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F08368B8194FC9300070377D /* test1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F08368BA194FC9EA0070377D /* TestBase.swift in Sources */,
 				F0593CAB194753C800908C20 /* NTSwiftJsonTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

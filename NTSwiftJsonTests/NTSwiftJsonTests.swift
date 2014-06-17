@@ -11,7 +11,7 @@ import XCTest
 import NTSwiftJson
 
 
-class NTSwiftJsonTests: XCTestCase {
+class NTSwiftJsonTests: TestBase {
     
     override func setUp() {
         super.setUp()
@@ -23,25 +23,83 @@ class NTSwiftJsonTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        var text = " { \"AnInt\" : 42, \"SomeText\": \"This is some \\\"text\\\"\", \"get_real\": 123.456e2, \"nelly\" : null, \"nested\" : { \"eggs\": 12 }, \"array\": [1, 2, 3, 4, 5], \"emptyObject\" : {}, \"emptyArray\": [] } "
+    
+    func validateTest1(json: JsonValue)
+    {
+        // validate some values...
         
-        var (json, error) = JsonValue.parseText(text)
+        let anInt = json["AnInt"]?.int
         
-        XCTAssert(error == nil, "Parser Failed with error: \(error.description)")
+        XCTAssertNotNil(anInt != nil)
+        XCTAssert(anInt == 42)
+        let someText = json["SomeText"]?.string
         
-        println("PARSED: \(json)")
+        XCTAssert(someText != nil)
+        XCTAssert(someText == "This is some \"text\"")
         
-        println("PARSED: \(json.prettyDescription)")
+        let getReal = json["get_real"].double
         
-        XCTAssert(true, "Pass")
+        // XCTAssertNotNil(getReal) crashes compiler
+        XCTAssert(getReal != nil)
+        XCTAssert(getReal == 12345.6)
+        
+        XCTAssert(json["nelly"].isNull)
+        
+        let array = json["array"]
+        XCTAssert(array != nil)
+        XCTAssert(array.array.count == 5)
+        XCTAssert(array[4].int == 5) // last item should be 5
+        
+        let nested = json["nested"]?["eggs"]?.int
+        
+        XCTAssert(nested != nil)
+        XCTAssert(nested == 12)
+        
+        let escapeTest = json["escapeTest"]?.string
+        XCTAssert(escapeTest != nil)
+        XCTAssert(escapeTest?.hasSuffix("\u220F"))
     }
     
-//    func testPerformanceExample() {
-//        // This is an example of a performance test case.
-//        self.measureBlock() {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
+    
+    func testJson() {
+        
+        var text = loadTestData("test1")
+        
+        var (json, error) = JsonValue.parseText(text)
+    
+        // Validate basic parsing...
+        
+        XCTAssert(error == nil, "Parser Failed with error: \(error.description)")
+        println("PARSED: \(json.prettyDescription)")
+        
+        validateTest1(json)
+        
+        // Test round-tripability...
+        
+        var text2 = json.description
+        var (json2, error2) = JsonValue.parseText(text2)
+        
+        XCTAssert(error == nil, "Parser Failed round-trip test with error: \(error.description)")
+        
+        validateTest1(json2)
+        
+        // Now, test comparison
+        
+        XCTAssert(json == json2)
+        XCTAssert(JsonValue.StringValue("123") == JsonValue.IntValue(123))
+        XCTAssert(JsonValue.IntValue(1) == JsonValue.BoolValue(true))
+        XCTAssert(JsonValue.ObjectValue(["a": JsonValue.DoubleValue(123)]) == JsonValue.ObjectValue(["a": JsonValue.StringValue("123")]))
+        
+        // Modify json2 and test again
+        
+        var obj = json2.object! // this is a copy
+        obj["get_real"] = JsonValue.StringValue("Some text");
+        json2 = JsonValue.ObjectValue(obj)
+        
+        XCTAssert(json2["get_real"].string == "Some text")
+        
+        XCTAssert(json != json2)
+    }
+    
     
 }

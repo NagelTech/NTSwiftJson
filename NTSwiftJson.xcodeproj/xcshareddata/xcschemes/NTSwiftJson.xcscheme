@@ -37,6 +37,11 @@
                BlueprintName = "NTSwiftJsonTests"
                ReferencedContainer = "container:NTSwiftJson.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "TestBase">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
